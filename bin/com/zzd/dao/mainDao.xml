@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zzd.dao.MainDao">
+
+	<resultMap id="urlMap" type="com.zzd.bean.UrlInfo">
+		<id column="url_id" jdbcType="INTEGER" property="urlId" />
+		<result column="url_text" jdbcType="VARCHAR" property="urlText" />
+		<result column="url_href" jdbcType="VARCHAR" property="urlHref" />
+	</resultMap>
+
+	<select id="UnvisitedHave" parameterType="String" resultType="int">
+		select count(*)
+		from unvisited_url
+		where
+		url_href=#{urlHref,jdbcType=VARCHAR}
+	</select>
+
+	<select id="VisitedHave" parameterType="String" resultType="int">
+		select count(*)
+		from visited_url
+		where
+		url_href=#{urlHref,jdbcType=VARCHAR}
+	</select>
+
+	<insert id="addToUnVisited" parameterType="com.zzd.bean.UrlInfo">
+		insert into
+		unvisited_url
+		(url_text,url_href)
+		values(#{urlText,jdbcType=VARCHAR},#{urlHref,jdbcType=VARCHAR})
+	</insert>
+
+	<select id="addToVisited" parameterType="com.zzd.bean.UrlInfo">
+		insert into visited_url
+		(url_text,url_href)
+		values(#{urlText,jdbcType=VARCHAR},#{urlHref,jdbcType=VARCHAR})
+	</select>
+
+	<delete id="deleteOneUnVisited" parameterType="int">
+		delete from unvisited_url where url_id=#{urlId,jdbcType=INTEGER}
+	</delete>
+
+	<select id="getOneUnVisited" resultMap="urlMap">
+		select * from
+		unvisited_url
+		where url_id=(select min(url_id) from unvisited_url)
+	</select>
+
+	<select id="getUnvisitedNum" resultType="int">
+		select count(*) from
+		unvisited_url
+	</select>
+
+
+	<select id="addTbas" parameterType="java.util.List">
+		insert into tba_info
+		(name,sex,ba_age,vip_days,fa_tie,follows,followers,love_ba,love_play_ba)
+		values
+		<foreach collection="list" item="item" separator=",">
+			(#{item.name,jdbcType=VARCHAR},
+			#{item.sex,jdbcType=VARCHAR},
+			#{item.baAge,jdbcType=VARCHAR},
+			#{item.vipDays,jdbcType=INTEGER},
+			#{item.faTie,jdbcType=INTEGER},
+			#{item.follows,jdbcType=INTEGER},
+			#{item.followers,jdbcType=INTEGER},
+			#{item.loveBa,jdbcType=VARCHAR},
+			#{item.lovePlayBa,jdbcType=VARCHAR})
+		</foreach>
+	</select>
+</mapper>
